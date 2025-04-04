@@ -1,0 +1,216 @@
+Jednoduchá hra, kde sa hráč ocitne na náhodne vygenerovanej mape na ktorej sú nepriatelia a itemy na zbieranie. Hráč poráža nepriateľov a prechádza miestnosťami za čo získava skóre.
+Prípadne zbiera a používa itemy ktoré buď našiel na zemy, ale padnú z porazených nepriateľov.
+
+class Game{
+private:
+   int score = 0;
+      - skore hraca pocas hry
+   Map map;
+      - mapa na ktorej sa hra bude odohravat
+   std::pair<int, int> get_pair_from_str(const std::string&);
+      - vrati std::pair zo stringu v tvare "int int", vyuziva sa pri load() funkcii
+
+public:
+    Game();
+
+    int get_score() const {return score;}
+    Map* get_map() {return &map;}
+
+    void print() const;
+      - vyprintuje do konzoly stav hry a mapu
+    void help() const;
+      - vyprintuje do konzoly ovladanie hry
+    void help_fight() const;
+      - vyprintuje do konzoly ovladanie suboja
+    void gain_score();
+      - score++;
+    void gain_score(int s);
+      - score += s;
+    void play();
+      - funckcia na konzolove hranie hry, tu je "mainloop" pre hraca
+    bool player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickup);
+      - spracovava kolo hraca, ak by hrac umrel na svojom kole vrati true, inak false
+    bool player_use_item(Player &player);
+      - spracovava ak by hrac chcel pouzit item, vrati true ak hrac item pouzije, inak false
+    bool fight(Player &player, Enemy &enemy);
+      - spracovava suboj medzi hracom a enemy, ak by hrac umrel vrati true, inak false
+    void populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);
+      - na mapu polozi nahodny pocet nepriatelov a pickupov
+    bool save(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);
+      - ulozi hru do suboru
+    bool load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);
+      - nacita hru zo suboru
+};
+
+
+enum special_characters {PICKUP = 15, EMPTY = 32, WALL = 35, PLAYER = 64, DOOR = 177 };
+   - char pre dany objekt na mape
+
+class Map {
+private:
+    int map_size;
+      - velkost mapy (map_size x map_size)
+    std::string map[MAX_SIZE];
+      - string reprezentacia mapy
+    std::pair<int, int> door_pos;
+      - x,y pozicia dvery na mape, vrati NULL, NULL ak mapa dvere nema
+
+public:
+    Map(bool have_obstacles = true);
+      - vytvori instanciu mapy s, alebo bez prekazok
+    int get_size() const {return map_size;}
+
+    std::string get_map();
+      - vrati string reprezentaciu mapy
+    void set_map(int new_size, const std::string &map_string);
+      - nastavi mapu na novy string a jej velkost na novu, vyuziva sa pri load() funkcii
+    void create_obstacle(int size);
+      - vytvori na nahodnej pozicii na mape prekazku o velkosti size x size
+    void print() const;
+      - do konzoly vyprintuje mapu
+    bool is_walkable (int x, int y) const ;
+      - povie o policky x,y sa po nom da prejst/ nachadza sa na nom stena
+    bool is_empty (int x, int y) const ;
+      - povie o policky x,y ci je prazdne
+    bool place_door(int x, int y);
+      - vlozi dvere na mapu tak, aby sa k nim dalo dostat z policka x,y. Ak to nie je mozne vrati false, inak true
+    std::pair<int, int> get_door_pos() const {return door_pos;}
+      - vrati poziciu dveri x,y
+    void set_door_pos(std::pair<int, int> new_door_pos) {door_pos = new_door_pos;}
+    char get_pos(int x, int y) const {return map[y][x];}
+    std::vector<int> find_path(int start_pos_x, int start_pos_y, int end_pos_x, int end_pos_y) const;
+      - najde cestu zo start_x, start_y do end_x, end_y a vrati vektor trasy
+    bool set_pos(int x, int y, char image);
+      - ak je to mozne na poziciu x,y na mape vlozi image, inak vrati false
+    bool set_pos(int x, int y, special_characters image);
+      - ak je to mozne na poziciu x,y na mape vlozi image, inak vrati false
+
+};
+
+
+enum enemy_type {RANDOM_ENEMY, WARRIOR, MAGE};
+   - typy nepriatlov
+
+class Pawn {
+protected:
+    Map &map;
+      - mapa na ktorej sa nachadzaju
+    int pos_x = 0, pos_y = 0;
+      - x,y pozicia na mape
+    int max_health = 1,health = 1;
+      - najvacsi mozny pocet zivotov, a sucasny pocet zivotov
+    int damage = 1;
+      - utok
+    int movement_speed = 1;
+      - rychlost pohybu po mape
+    char image = 'P';
+      - char ktory ho prezentuje na mape
+
+public:
+    Pawn(Map &map);
+      - vytovri Pawna na mape
+    Pawn(Map &map, int pos_x, int pos_y, int max_health, int damage, int movement_speed, char image);
+      - vytovri pawna na mape a dosadi hodnoty do premmenych
+
+    int get_pos_x() const {return pos_x;}
+    int get_pos_y() const {return pos_y;}
+    bool set_pos(int x, int y);
+      - vlozi Pawna na mapu na x,y suradnice a  vrati true, ak to nie je mozne vrati false
+    int get_max_health() const {return max_health;}
+    void set_max_health(int _max_health)  {max_health = _max_health;}
+    int get_health() const {return health;}
+    void set_health(int _health)  {health = _health;}
+    virtual int get_damage() const {return damage;}
+    int get_movement_speed() const {return movement_speed;}
+    void set_movement_speed (int _movement_speed) {movement_speed = _movement_speed;}
+    char get_image() const {return image;}
+
+    void move_towards(int pos_x, int pos_y);
+      - posunie sa smerom k x,y na mape a movement krokov
+    bool lose_health(int dmg);
+      - srati dmg zivotov
+
+    virtual bool use_item (pickup_type type);
+      - pouzije item Pickup typu type
+};
+
+
+class Enemy : public Pawn {
+private:
+    bool dead = false;
+    void generate_enemy(enemy_type type);
+      - na inicializuje Enemy podla typu
+
+public:
+    Enemy(Map &map);
+    Enemy(Map &map, enemy_type type);
+    Enemy(Map &map, enemy_type type, int pos_x, int pos_y);
+
+    void die(){dead = true;}
+    bool is_dead() const {return dead;}
+};
+
+
+enum direction {LEFT, RIGHT, UP, DOWN};
+   - smer pohybu
+
+class Player : public Pawn{
+private:
+    int movement_left;
+    int current_damage;
+    std::map<int, int> inventory;
+      - inventar hraca kde si uchovava pocet Pickup ktore ma k dispozicii
+
+public:
+    Player(Map &map);
+    Player(Map &map, int pos_x, int pos_y);
+
+    int get_movement_left() const {return movement_left;};
+    void set_movement_left(int _movement_left) {movement_left = _movement_left;};
+    int get_damage() const override {return current_damage;}
+    void reset_movement(){movement_left = movement_speed;};
+    void reset_damage(){current_damage = damage;};
+    std::string get_items ();
+      - vrati string reprezentaciu itemov z inventara
+    void set_items (int num_health, int num_speed, int num_power);
+      - nastavi pocet itemov v invetory
+    void print_items() const;
+      - vytlaci do konzoly itemy z inventara a ich pocet
+
+    bool move(direction direction);
+      - ak je mozne pohne hraca o 1 v danom smere a vrati true, inak vrati false
+    void use_movement() {movement_left--;}
+    bool pickup(Pickup &pickup);
+      - zdvihne Pickup zo a prida si ho do inventara a vrati true, ak to nie je mozne vrati false
+    bool use_item(pickup_type type) override;
+      - pouzije Pickup z inventara a odoberie jeho pocet o jedna a vrati true, ak hrac nema dany Pickup nic sa nestane a vrati false
+};
+
+enum pickup_type {RANDOM_PICKUP, HEALTH_POTION, POWER_POTION, SPEED_POTION};
+   - typy pickapov
+
+class Pickup {
+private:
+    Map &map;
+    pickup_type type;
+    int pos_x, pos_y;
+    char image = 15;
+    bool picked = false;
+
+    void generate_pickup(pickup_type _type);
+      - vygeneruje pickup podla typu
+public:
+    Pickup(Map &map, pickup_type _type);
+    Pickup(Map &map, int pos_x, int pos_y);
+    Pickup(Map &map, pickup_type _type, int pos_x, int pos_y);
+
+    pickup_type get_type() const {return type;};
+    std::string description() const;
+      - vrati string ktory opisuje vlastnosti predmetu
+    bool set_pos(int x, int y);
+      - polozi Pickup na mapu na x,y a vrati true, ak to nie je mozne vrati false
+    int get_pos_x() const{return pos_x;}
+    int get_pos_y() const{return pos_y;}
+    void pickup() {picked = true;}
+    bool is_picked() const{return picked;}
+};
