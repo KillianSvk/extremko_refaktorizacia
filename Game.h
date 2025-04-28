@@ -19,6 +19,10 @@ private:
 
     std::pair<int, int> get_pair_from_str(const std::string&);
 
+    bool player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickup);
+    bool player_use_item(Player &player);
+    bool fight(Player &player, Enemy &enemy);
+
 public:
     Game();
     ~Game() = default;
@@ -32,9 +36,6 @@ public:
     void gain_score();
     void gain_score(int s);
     void play();
-    bool player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickup);
-    bool player_use_item(Player &player);
-    bool fight(Player &player, Enemy &enemy);
     void populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);
     bool save(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);
     bool load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups);

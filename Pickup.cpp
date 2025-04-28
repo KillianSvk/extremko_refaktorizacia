@@ -20,6 +20,7 @@ void Pickup::generate_pickup(pickup_type _type) {
     if (_type == RANDOM_PICKUP) {
         srand(time(nullptr));
         chance = rand() % 3 + 1;
+
     } else {
         chance = _type;
     }

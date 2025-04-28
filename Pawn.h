@@ -5,8 +5,6 @@
 
 #pragma once
 
-enum enemy_type {RANDOM_ENEMY, WARRIOR, MAGE};
-
 class Pawn {
 protected:
     Map &map;
@@ -17,7 +15,7 @@ protected:
     char image = 'P';
 
 public:
-    Pawn(Map &map);
+    explicit Pawn(Map &map);
     Pawn(Map &map, int pos_x, int pos_y, int max_health, int damage, int movement_speed, char image);
 
     int get_pos_x() const {return pos_x;}
