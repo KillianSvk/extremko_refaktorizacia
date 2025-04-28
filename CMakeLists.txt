@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6.2)
-project(semestralka)
+project(extremko_refaktorizacia)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -27,5 +27,5 @@ set(SOURCE_FILES
 )
 
 include_directories(GoogleTest)
-add_executable(semestralka ${SOURCE_FILES})
-target_link_libraries(semestralka ${CMAKE_THREAD_LIBS_INIT})
+add_executable(extremko_refaktorizacia ${SOURCE_FILES})
+target_link_libraries(extremko_refaktorizacia ${CMAKE_THREAD_LIBS_INIT})
