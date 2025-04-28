@@ -2,9 +2,7 @@
 
 Map::Map(bool have_obstacles) {
     srand(time(nullptr));
-    int map_size_range = 7;
-    int min_map_size = 10;
-    map_size = rand() % map_size_range + min_map_size;
+    map_size = rand() % 7 + 10;
 
     for (int i = 0; i < map_size; ++i) {
         for (int j = 0; j < map_size; ++j) {
@@ -19,15 +17,10 @@ Map::Map(bool have_obstacles) {
 
     // Create Obstacles
     if (have_obstacles) {
-        int num_of_obstacles_range = 5;
-        int min_num_of_obstacles = 2;
-        int num_of_obstacles = rand() % num_of_obstacles_range + min_num_of_obstacles;
+        int num_of_obstacles = rand() % 5 + 2;
         int obstacle_size;
-
-        int obstacle_size_range = 2;
-        int min_obstacle_size = 1;
         for (int i = 0; i < num_of_obstacles; ++i) {
-            obstacle_size = rand() % obstacle_size_range + min_obstacle_size;
+            obstacle_size = rand() % 2 + 1;
             create_obstacle(obstacle_size);
         }
     }
@@ -35,32 +28,34 @@ Map::Map(bool have_obstacles) {
 
 bool Map::place_door(int x, int y) {
     std::vector<std::pair<int, int>> possible_door_pos;
-
+    // Top Wall
     for (int i = 1; i < map_size - 1; ++i) {
-        // Top Wall
         possible_door_pos.emplace_back(i, 0);
-
-        // Bottom Wall
+    }
+    // Bottom Wall
+    for (int i = 1; i < map_size - 1; ++i) {
         possible_door_pos.emplace_back(i, map_size - 1);
-
-        // Right Wall
+    }
+    // Right Wall
+    for (int i = 1; i < map_size - 1; ++i) {
         possible_door_pos.emplace_back(map_size - 1, i);
-
-        // Left Wall
+    }
+    // Left Wall
+    for (int i = 1; i < map_size - 1; ++i) {
         possible_door_pos.emplace_back(0, i);
     }
 
     auto rng = std::default_random_engine {};
     std::shuffle(possible_door_pos.begin(), possible_door_pos.end(), rng);
 
-    bool exist_path_to_door = true;
+    bool no_path = true;
     std::pair<int, int> pos;
     int door_x, door_y;
-    while (not possible_door_pos.empty() && exist_path_to_door) {
+    while (not possible_door_pos.empty() && no_path) {
         pos = possible_door_pos.back();
         door_x = pos.first, door_y = pos.second;
-        map[door_y][door_x] = DOOR;
-        exist_path_to_door = find_path(x, y, door_x, door_y).empty();
+        map[door_y][door_x] = EMPTY;
+        no_path = find_path(x, y, door_x, door_y).empty();
         map[door_y][door_x] = WALL;
         possible_door_pos.pop_back();
     }
@@ -154,92 +149,43 @@ std::vector<int> Map::find_path(int start_pos_x, int start_pos_y, int end_pos_x,
 
     paths.emplace_back();
 
-    int x = neighbors.at(0), y = neighbors.at(1), path_len = neighbors.at(2);
+    int x = neighbors.at(0), y = neighbors.at(1);
     while (!neighbors.empty()) {
         x = neighbors.at(0);
         y = neighbors.at(1);
-        path_len = neighbors.at(2);
         neighbors.erase(neighbors.begin(), neighbors.begin() + 3);
 
         path = paths.at(0);
         paths.erase(paths.begin());
 
-        if (distance_map[y][x].first <= path_len || ! is_walkable(x, y)) {
+        if (distance_map[y][x].first <= path.size() || ! is_walkable(x, y)) {
             continue;
         }
 
-        distance_map[y][x].first = path_len;
+        distance_map[y][x].first = path.size();
         distance_map[y][x].second = path;
 
-        // Right
-        if (is_walkable(x + 1, y)) {
-            neighbors.push_back(x + 1);
-            neighbors.push_back(y);
-            neighbors.push_back(path_len + 1);
+        std::vector<std::pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (auto direction : directions) {
+            if (is_walkable(x + direction.first, y + direction.second)) {
+            neighbors.push_back(x + direction.first);
+            neighbors.push_back(y + direction.second);
+            neighbors.push_back(path.size() + 1);
 
             paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x+1);
-            paths.at(paths.size() - 1).push_back(y);
-        }
-        // Left
-        if (is_walkable(x - 1, y)) {
-            neighbors.push_back(x - 1);
-            neighbors.push_back(y);
-            neighbors.push_back(path_len + 1);
+            paths.at(paths.size() - 1).push_back(x + direction.first);
+            paths.at(paths.size() - 1).push_back(y + direction.second);
+            }
 
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x-1);
-            paths.at(paths.size() - 1).push_back(y);
         }
-        // Up
-        if (is_walkable(x, y - 1)) {
-            neighbors.push_back(x);
-            neighbors.push_back(y - 1);
-            neighbors.push_back(path_len + 1);
 
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x);
-            paths.at(paths.size() - 1).push_back(y-1);
-        }
-        // Down
-        if (is_walkable(x, y + 1)) {
-            neighbors.push_back(x);
-            neighbors.push_back(y + 1);
-            neighbors.push_back(path_len + 1);
-
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x);
-            paths.at(paths.size() - 1).push_back(y+1);
-        }
     }
 
-    // TEST PRINT
-//    for (int i = 0; i < map_size; ++i) {
-//        for (int j = 0; j < map_size; ++j) {
-//            if (distance_map[i][j].first == std::numeric_limits<int>::max()){
-//                std::cout << "#" << " ";
-//
-//            } else {
-//                std::cout << distance_map[i][j].first << " ";
-//
-//            }
-//        }
-//        std::cout << '\n';
-//    }
-//
-//    path = distance_map[end_pos_y][end_pos_x].second;
-//    for (int i = 0; i < path.size(); ++i) {
-//        std::cout << path[i];
-//        if (i % 2 == 0){
-//            std::cout << "-";
-//        } else {
-//            std::cout << "; ";
-//        }
-//    }
 
     return distance_map[end_pos_y][end_pos_x].second;
 
 }
+
 
 std::string Map::get_map() {
     std::string string;
