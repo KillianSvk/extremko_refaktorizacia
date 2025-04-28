@@ -1,4 +1,4 @@
-"D:\JetBrains\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/JetBrains/CLion 2023.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\petoh\Desktop\School\2_Zimny\C++\semestralka -B C:\Users\petoh\Desktop\School\2_Zimny\C++\semestralka\cmake-build-debug
+"D:\JetBrains\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/JetBrains/CLion 2023.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\petoh\Desktop\School\3_Letny\extremko\extremko_refaktorizacia -B C:\Users\petoh\Desktop\School\3_Letny\extremko\extremko_refaktorizacia\cmake-build-debug
 -- The C compiler identification is GNU 13.1.0
 -- The CXX compiler identification is GNU 13.1.0
 -- Detecting C compiler ABI info
@@ -14,6 +14,6 @@
 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
 -- Found Threads: TRUE  
--- Configuring done (6.5s)
+-- Configuring done (5.6s)
 -- Generating done (0.0s)
--- Build files have been written to: C:/Users/petoh/Desktop/School/2_Zimny/C++/semestralka/cmake-build-debug
+-- Build files have been written to: C:/Users/petoh/Desktop/School/3_Letny/extremko/extremko_refaktorizacia/cmake-build-debug
