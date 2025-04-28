@@ -2,9 +2,9 @@
 
 Map::Map(bool have_obstacles) {
     srand(time(nullptr));
-    int map_size_range = 7;
+    int range_of_map_size = 7;
     int min_map_size = 10;
-    map_size = rand() % map_size_range + min_map_size;
+    map_size = rand() % range_of_map_size + min_map_size;
 
     for (int i = 0; i < map_size; ++i) {
         for (int j = 0; j < map_size; ++j) {
@@ -19,15 +19,15 @@ Map::Map(bool have_obstacles) {
 
     // Create Obstacles
     if (have_obstacles) {
-        int num_of_obstacles_range = 5;
+        int range_of_num_of_obstacles = 5;
         int min_num_of_obstacles = 2;
-        int num_of_obstacles = rand() % num_of_obstacles_range + min_num_of_obstacles;
+        int num_of_obstacles = rand() % range_of_num_of_obstacles + min_num_of_obstacles;
         int obstacle_size;
 
-        int obstacle_size_range = 2;
+        int range_of_obstacle_size = 2;
         int min_obstacle_size = 1;
         for (int i = 0; i < num_of_obstacles; ++i) {
-            obstacle_size = rand() % obstacle_size_range + min_obstacle_size;
+            obstacle_size = rand() % range_of_obstacle_size + min_obstacle_size;
             create_obstacle(obstacle_size);
         }
     }

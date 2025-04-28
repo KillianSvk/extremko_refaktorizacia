@@ -3,6 +3,8 @@
 
 #pragma once
 
+enum enemy_type {RANDOM_ENEMY, WARRIOR, MAGE};
+
 class Enemy : public Pawn {
 private:
     bool dead = false;

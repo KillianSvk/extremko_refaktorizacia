@@ -77,7 +77,9 @@ void Game::play() {
 }
 
 void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
-    int num_of_enemies = rand() % 3 + 1;
+    int range_of_num_of_enemies = 3;
+    int min_num_of_enemies = 1;
+    int num_of_enemies = rand() % range_of_num_of_enemies + min_num_of_enemies;
 
     for (int i = 0; i < num_of_enemies; ++i) {
         enemies.emplace_back(map);
@@ -109,7 +111,8 @@ void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickup
         }
     }
 
-    int num_of_pickups = rand() % 3;
+    int range_of_num_of_pickups = 3;
+    int num_of_pickups = rand() % range_of_num_of_pickups;
 
     for (int i = 0; i < num_of_pickups; ++i) {
         pickups.emplace_back(map, RANDOM_PICKUP);
@@ -234,7 +237,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
                     }
                 }
 
-                // Door Bottom
+            // Door Bottom
             } else if (player_input == "s") {
                 for (int i = 0; i < map.get_size() / 2; ++i) {
                     if (player.set_pos(map.get_size() / 2 + i, 1)) {
@@ -245,7 +248,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
                     }
                 }
 
-                // Door Left
+            // Door Left
             } else if (player_input == "a") {
                 for (int i = 0; i < map.get_size() / 2; ++i) {
                     if (player.set_pos(map.get_size() - 2, i)) {
@@ -256,7 +259,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
                     }
                 }
 
-                // Door right
+            // Door right
             } else if (player_input == "d") {
                 for (int i = 0; i < map.get_size() / 2; ++i) {
                     if (player.set_pos(1, map.get_size() / 2 + i)) {
@@ -493,7 +496,7 @@ bool Game::load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup>
             i++;
         }
 
-            // Map
+        // Map
         else if (i == 1) {
             // Door Pos
             std::getline(file, line);
@@ -514,7 +517,7 @@ bool Game::load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup>
             i++;
         }
 
-            // Player
+        // Player
         else if (i == 2) {
             // Pos
             std::getline(file, line);
@@ -567,10 +570,9 @@ bool Game::load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup>
 
             std::getline(file, line);
             i++;
-        }
 
-            // Pickups
-        else if (i == 4) {
+        // Pickups
+        } else if (i == 4) {
             std::getline(file, line);
             j = std::stoi(line);
             for (int k = 0; k < j; ++k) {

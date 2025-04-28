@@ -1,0 +1,6 @@
+Map::Map
+Map::place_door
+Map::find_path
+
+removed magic constants
+moved functions from public -> private
