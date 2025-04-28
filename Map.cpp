@@ -2,7 +2,9 @@
 
 Map::Map(bool have_obstacles) {
     srand(time(nullptr));
-    map_size = rand() % 7 + 10;
+    int map_size_range = 7;
+    int min_map_size = 10;
+    map_size = rand() % map_size_range + min_map_size;
 
     for (int i = 0; i < map_size; ++i) {
         for (int j = 0; j < map_size; ++j) {
@@ -17,10 +19,15 @@ Map::Map(bool have_obstacles) {
 
     // Create Obstacles
     if (have_obstacles) {
-        int num_of_obstacles = rand() % 5 + 2;
+        int num_of_obstacles_range = 5;
+        int min_num_of_obstacles = 2;
+        int num_of_obstacles = rand() % num_of_obstacles_range + min_num_of_obstacles;
         int obstacle_size;
+
+        int obstacle_size_range = 2;
+        int min_obstacle_size = 1;
         for (int i = 0; i < num_of_obstacles; ++i) {
-            obstacle_size = rand() % 2 + 1;
+            obstacle_size = rand() % obstacle_size_range + min_obstacle_size;
             create_obstacle(obstacle_size);
         }
     }
@@ -28,34 +35,32 @@ Map::Map(bool have_obstacles) {
 
 bool Map::place_door(int x, int y) {
     std::vector<std::pair<int, int>> possible_door_pos;
-    // Top Wall
+
     for (int i = 1; i < map_size - 1; ++i) {
+        // Top Wall
         possible_door_pos.emplace_back(i, 0);
-    }
-    // Bottom Wall
-    for (int i = 1; i < map_size - 1; ++i) {
+
+        // Bottom Wall
         possible_door_pos.emplace_back(i, map_size - 1);
-    }
-    // Right Wall
-    for (int i = 1; i < map_size - 1; ++i) {
+
+        // Right Wall
         possible_door_pos.emplace_back(map_size - 1, i);
-    }
-    // Left Wall
-    for (int i = 1; i < map_size - 1; ++i) {
+
+        // Left Wall
         possible_door_pos.emplace_back(0, i);
     }
 
     auto rng = std::default_random_engine {};
     std::shuffle(possible_door_pos.begin(), possible_door_pos.end(), rng);
 
-    bool no_path = true;
+    bool exist_path_to_door = true;
     std::pair<int, int> pos;
     int door_x, door_y;
-    while (not possible_door_pos.empty() && no_path) {
+    while (not possible_door_pos.empty() && exist_path_to_door) {
         pos = possible_door_pos.back();
         door_x = pos.first, door_y = pos.second;
-        map[door_y][door_x] = EMPTY;
-        no_path = find_path(x, y, door_x, door_y).empty();
+        map[door_y][door_x] = DOOR;
+        exist_path_to_door = find_path(x, y, door_x, door_y).empty();
         map[door_y][door_x] = WALL;
         possible_door_pos.pop_back();
     }
