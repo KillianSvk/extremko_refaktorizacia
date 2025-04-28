@@ -11,6 +11,7 @@ Pickup::Pickup(Map &map,int pos_x, int pos_y) : map(map), pos_x(pos_x), pos_y(po
     set_pos(pos_x, pos_y);
 }
 
+
 Pickup::Pickup(Map &map, pickup_type _type, int pos_x, int pos_y) : map(map), type(_type), pos_x(pos_x), pos_y(pos_y) {
     set_pos(pos_x, pos_y);
 }

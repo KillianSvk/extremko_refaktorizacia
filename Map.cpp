@@ -149,92 +149,43 @@ std::vector<int> Map::find_path(int start_pos_x, int start_pos_y, int end_pos_x,
 
     paths.emplace_back();
 
-    int x = neighbors.at(0), y = neighbors.at(1), path_len = neighbors.at(2);
+    int x = neighbors.at(0), y = neighbors.at(1);
     while (!neighbors.empty()) {
         x = neighbors.at(0);
         y = neighbors.at(1);
-        path_len = neighbors.at(2);
         neighbors.erase(neighbors.begin(), neighbors.begin() + 3);
 
         path = paths.at(0);
         paths.erase(paths.begin());
 
-        if (distance_map[y][x].first <= path_len || ! is_walkable(x, y)) {
+        if (distance_map[y][x].first <= path.size() || ! is_walkable(x, y)) {
             continue;
         }
 
-        distance_map[y][x].first = path_len;
+        distance_map[y][x].first = path.size();
         distance_map[y][x].second = path;
 
-        // Right
-        if (is_walkable(x + 1, y)) {
-            neighbors.push_back(x + 1);
-            neighbors.push_back(y);
-            neighbors.push_back(path_len + 1);
+        std::vector<std::pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (auto direction : directions) {
+            if (is_walkable(x + direction.first, y + direction.second)) {
+            neighbors.push_back(x + direction.first);
+            neighbors.push_back(y + direction.second);
+            neighbors.push_back(path.size() + 1);
 
             paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x+1);
-            paths.at(paths.size() - 1).push_back(y);
-        }
-        // Left
-        if (is_walkable(x - 1, y)) {
-            neighbors.push_back(x - 1);
-            neighbors.push_back(y);
-            neighbors.push_back(path_len + 1);
+            paths.at(paths.size() - 1).push_back(x + direction.first);
+            paths.at(paths.size() - 1).push_back(y + direction.second);
+            }
 
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x-1);
-            paths.at(paths.size() - 1).push_back(y);
         }
-        // Up
-        if (is_walkable(x, y - 1)) {
-            neighbors.push_back(x);
-            neighbors.push_back(y - 1);
-            neighbors.push_back(path_len + 1);
 
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x);
-            paths.at(paths.size() - 1).push_back(y-1);
-        }
-        // Down
-        if (is_walkable(x, y + 1)) {
-            neighbors.push_back(x);
-            neighbors.push_back(y + 1);
-            neighbors.push_back(path_len + 1);
-
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x);
-            paths.at(paths.size() - 1).push_back(y+1);
-        }
     }
 
-    // TEST PRINT
-//    for (int i = 0; i < map_size; ++i) {
-//        for (int j = 0; j < map_size; ++j) {
-//            if (distance_map[i][j].first == std::numeric_limits<int>::max()){
-//                std::cout << "#" << " ";
-//
-//            } else {
-//                std::cout << distance_map[i][j].first << " ";
-//
-//            }
-//        }
-//        std::cout << '\n';
-//    }
-//
-//    path = distance_map[end_pos_y][end_pos_x].second;
-//    for (int i = 0; i < path.size(); ++i) {
-//        std::cout << path[i];
-//        if (i % 2 == 0){
-//            std::cout << "-";
-//        } else {
-//            std::cout << "; ";
-//        }
-//    }
 
     return distance_map[end_pos_y][end_pos_x].second;
 
 }
+
 
 std::string Map::get_map() {
     std::string string;
