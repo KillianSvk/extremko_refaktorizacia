@@ -21,7 +21,7 @@ private:
     std::pair<int, int> door_pos;
 
 public:
-    Map(bool have_obstacles = true);
+    explicit Map(bool have_obstacles = true);
     int get_size() const {return map_size;}
 
     std::string get_map();
@@ -37,5 +37,4 @@ public:
     std::vector<int> find_path(int start_pos_x, int start_pos_y, int end_pos_x, int end_pos_y) const;
     bool set_pos(int x, int y, char image);
     bool set_pos(int x, int y, special_characters image);
-    void add_neighbor(std::vector<int> neighbors, std::vector<std::vector<int>> paths, int targetX, int targetY);
 };

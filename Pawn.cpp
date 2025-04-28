@@ -13,10 +13,8 @@ void Pawn::move_towards(int to_pos_x, int to_pos_y) {
 
     if (path.size() >= movement_speed * 2) {
         set_pos(path[(movement_speed - 1) * 2], path[(movement_speed - 1) * 2 + 1]);
-        return;
-    }
 
-    if (not path.empty()){
+    }else if (not path.empty()){
         set_pos(path[path.size() - 2], path[path.size() - 1]);
     }
 }

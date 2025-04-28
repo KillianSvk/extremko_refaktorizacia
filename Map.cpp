@@ -138,57 +138,56 @@ bool Map::set_pos(int x, int y, special_characters image) {
 }
 
 std::vector<int> Map::find_path(int start_pos_x, int start_pos_y, int end_pos_x, int end_pos_y) const {
-    std::pair<int, std::vector<int>> distance_map[map_size][map_size];
+    std::vector<int> distance_map[map_size][map_size];
     for (int i = 0; i < map_size; ++i) {
         for (int j = 0; j < map_size; ++j) {
-            distance_map[i][j] = std::pair<int, std::vector<int>>(std::numeric_limits<int>::max(), {});
+            distance_map[i][j] = std::vector<int>(map_size * map_size, std::numeric_limits<int>::min());
         }
     }
+
+    std::vector<int> no_path = distance_map[end_pos_y][end_pos_x];
 
     std::vector<int> neighbors;
     std::vector<std::vector<int>> paths;
     std::vector<int> path;
     neighbors.push_back(start_pos_x);
     neighbors.push_back(start_pos_y);
-    neighbors.push_back(0);
-
     paths.emplace_back();
 
-    int x = neighbors.at(0), y = neighbors.at(1);
+    int x, y;
     while (!neighbors.empty()) {
         x = neighbors.at(0);
         y = neighbors.at(1);
-        neighbors.erase(neighbors.begin(), neighbors.begin() + 3);
+        neighbors.erase(neighbors.begin(), neighbors.begin() + 2);
 
         path = paths.at(0);
         paths.erase(paths.begin());
 
-        if (distance_map[y][x].first <= path.size() || ! is_walkable(x, y)) {
+        if (distance_map[y][x].size() <= path.size() || ! is_walkable(x, y)) {
             continue;
         }
 
-        distance_map[y][x].first = path.size();
-        distance_map[y][x].second = path;
+        distance_map[y][x] = path;
 
         std::vector<std::pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (auto direction : directions) {
             if (is_walkable(x + direction.first, y + direction.second)) {
-            neighbors.push_back(x + direction.first);
-            neighbors.push_back(y + direction.second);
-            neighbors.push_back(path.size() + 1);
+                neighbors.push_back(x + direction.first);
+                neighbors.push_back(y + direction.second);
 
-            paths.push_back(path);
-            paths.at(paths.size() - 1).push_back(x + direction.first);
-            paths.at(paths.size() - 1).push_back(y + direction.second);
+                paths.push_back(path);
+                paths.at(paths.size() - 1).push_back(x + direction.first);
+                paths.at(paths.size() - 1).push_back(y + direction.second);
             }
 
         }
 
     }
+    if (no_path == distance_map[end_pos_y][end_pos_x]) {
+        return {};
+    }
 
-
-    return distance_map[end_pos_y][end_pos_x].second;
-
+    return distance_map[end_pos_y][end_pos_x];
 }
 
 

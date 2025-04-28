@@ -36,7 +36,7 @@ TEST(Game, AlwaysCanReachDoor) {
         enemy_placed = enemy.set_pos(rand() % map->get_size(), rand() % map->get_size());
     }
 
-    map->place_door(enemy.get_pos_x(), enemy.get_pos_y());
+    bool door_placed = map->place_door(enemy.get_pos_x(), enemy.get_pos_y());
     std::pair<int, int> door_pos = map->get_door_pos();
 
 //    game.print();
@@ -64,12 +64,9 @@ TEST(Game, GoToEnemy) {
         path = map->find_path(warrior.get_pos_x(), warrior.get_pos_y(), mage.get_pos_x(), mage.get_pos_y());
     }
 
-//    game.print();
-
     while (warrior.get_pos_x() != mage.get_pos_x()
     || warrior.get_pos_y() != mage.get_pos_y()) {
         warrior.move_towards(mage.get_pos_x(), mage.get_pos_y());
-//        game.print();
     }
 
 
