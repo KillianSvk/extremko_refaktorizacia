@@ -3,7 +3,7 @@
 
 Pickup::Pickup(Map &map, pickup_type _type) : map(map), type(_type) {
     generate_pickup(_type);
-    pos_x = NULL; pos_y = NULL;
+    pos_x = std::numeric_limits<int>::min(); pos_y = std::numeric_limits<int>::min();
 }
 
 Pickup::Pickup(Map &map,int pos_x, int pos_y) : map(map), pos_x(pos_x), pos_y(pos_y) {
@@ -38,7 +38,7 @@ void Pickup::generate_pickup(pickup_type _type) {
             break;
 
         default:
-//            type = HEALTH_POTION;
+            throw std::runtime_error("Potion type doesn't exist");
             break;
     }
 }
@@ -57,12 +57,16 @@ bool Pickup::set_pos(int x, int y) {
 std::string Pickup::description() const {
     if (type == HEALTH_POTION) {
         return "HEALTH POTION (h): heals 15 HP";
-    }
-    if (type == POWER_POTION) {
+
+    }else if (type == POWER_POTION) {
         return "POWER POTION (p): gives +2 attack for one fight";
-    }
-    if (type == SPEED_POTION) {
+
+    }else if (type == SPEED_POTION) {
         return "SPEED POTION (s): gives +1 max movement speed";
+
+    } else {
+        throw std::runtime_error("Potion type doesn't exist");
     }
+
 
 }

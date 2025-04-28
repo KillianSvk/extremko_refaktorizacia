@@ -1,3 +1,3 @@
-C:/Users/petoh/Desktop/School/2_Zimny/C++/semestralka/cmake-build-debug/CMakeFiles/semestralka.dir
-C:/Users/petoh/Desktop/School/2_Zimny/C++/semestralka/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/petoh/Desktop/School/2_Zimny/C++/semestralka/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/petoh/Desktop/School/3_Letny/extremko/extremko_refaktorizacia/cmake-build-debug/CMakeFiles/extremko_refaktorizacia.dir
+C:/Users/petoh/Desktop/School/3_Letny/extremko/extremko_refaktorizacia/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/petoh/Desktop/School/3_Letny/extremko/extremko_refaktorizacia/cmake-build-debug/CMakeFiles/rebuild_cache.dir

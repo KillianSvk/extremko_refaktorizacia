@@ -1,5 +1,7 @@
 #include <random>
 #include <ctime>
+#include <stdexcept>
+#include <exception>
 
 #include "Map.h"
 
