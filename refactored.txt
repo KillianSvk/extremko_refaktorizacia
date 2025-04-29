@@ -4,3 +4,5 @@ Map::find_path
 
 removed magic constants
 moved functions from public -> private
+
+Game::populate_map

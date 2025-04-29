@@ -53,14 +53,14 @@ bool Map::place_door(int x, int y) {
     auto rng = std::default_random_engine {};
     std::shuffle(possible_door_pos.begin(), possible_door_pos.end(), rng);
 
-    bool exist_path_to_door = true;
+    bool exist_path_to_door = false;
     std::pair<int, int> pos;
     int door_x, door_y;
-    while (not possible_door_pos.empty() && exist_path_to_door) {
+    while (not possible_door_pos.empty() && !exist_path_to_door) {
         pos = possible_door_pos.back();
         door_x = pos.first, door_y = pos.second;
         map[door_y][door_x] = DOOR;
-        exist_path_to_door = find_path(x, y, door_x, door_y).empty();
+        exist_path_to_door = !find_path(x, y, door_x, door_y).empty();
         map[door_y][door_x] = WALL;
         possible_door_pos.pop_back();
     }
@@ -183,6 +183,7 @@ std::vector<int> Map::find_path(int start_pos_x, int start_pos_y, int end_pos_x,
         }
 
     }
+
     if (no_path == distance_map[end_pos_y][end_pos_x]) {
         return {};
     }
