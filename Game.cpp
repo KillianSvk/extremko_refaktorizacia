@@ -165,18 +165,15 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
 
         std::cin >> player_input;
 
-        // Check Player Input
-        if (player_input == "w") {
-            player.move(UP);
+        std::map<std::string, direction> direction_map = {
+                {"w", UP},
+                {"s", DOWN},
+                {"a", LEFT},
+                {"d", RIGHT}
+        };
 
-        } else if (player_input == "s") {
-            player.move(DOWN);
-
-        } else if (player_input == "a") {
-            player.move(LEFT);
-
-        } else if (player_input == "d") {
-            player.move(RIGHT);
+        if(direction_map.find(player_input) != direction_map.end()) {
+            player.move(direction_map[player_input]);
 
         } else if (player_input == "u" || player_input == "use") {
             if (not player_use_item(player)) {
@@ -234,46 +231,19 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
         if (player.get_pos_x() == door_x
             && player.get_pos_y() == door_y) {
             map = Map();
-            // Door Top
-            if (player_input == "w") {
-                for (int i = 0; i < map.get_size() / 2; ++i) {
-                    if (player.set_pos(map.get_size() / 2 + i, map.get_size() - 2)) {
-                        break;
-                    }
-                    if (player.set_pos(map.get_size() / 2 - i, map.get_size() - 2)) {
-                        break;
-                    }
-                }
 
-            // Door Bottom
-            } else if (player_input == "s") {
-                for (int i = 0; i < map.get_size() / 2; ++i) {
-                    if (player.set_pos(map.get_size() / 2 + i, 1)) {
-                        break;
-                    }
-                    if (player.set_pos(map.get_size() / 2 - i, 1)) {
-                        break;
-                    }
-                }
+            std::map<std::string, std::pair<int, int>> door_positions = {
+                    {"w", {map.get_size() / 2, map.get_size() - 2}}, // Door Top
+                    {"s", {map.get_size() / 2, 1}},                 // Door Bottom
+                    {"a", {map.get_size() - 2, 0}},                 // Door Left
+                    {"d", {1, map.get_size() / 2}}                  // Door Right
+            };
 
-            // Door Left
-            } else if (player_input == "a") {
+            if (door_positions.find(player_input) != door_positions.end()) {
+                int base_x = door_positions[player_input].first;
+                int base_y = door_positions[player_input].second;
                 for (int i = 0; i < map.get_size() / 2; ++i) {
-                    if (player.set_pos(map.get_size() - 2, i)) {
-                        break;
-                    }
-                    if (player.set_pos(map.get_size() - 2, -i)) {
-                        break;
-                    }
-                }
-
-            // Door right
-            } else if (player_input == "d") {
-                for (int i = 0; i < map.get_size() / 2; ++i) {
-                    if (player.set_pos(1, map.get_size() / 2 + i)) {
-                        break;
-                    }
-                    if (player.set_pos(1, map.get_size() / 2 - i)) {
+                    if (player.set_pos(base_x + i, base_y) || player.set_pos(base_x - i, base_y)) {
                         break;
                     }
                 }

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 #include <sstream>
+#include <map>
 
 #include "Map.h"
 #include "Enemy.h"
