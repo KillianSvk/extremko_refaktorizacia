@@ -425,6 +425,44 @@ void Game::help_fight() const {
               << "    USE ITEM - u/use" << '\n';
 }
 
+void Game::save_game_score(std::ofstream &file) const {
+    file << score << '\n';
+    file << '\n';
+}
+
+void Game::save_map(std::ofstream &file)  {
+    file << map.get_door_pos().first << " " << map.get_door_pos().second << '\n';
+    file << map.get_size() << '\n';
+    file << map.get_map();
+    file << '\n';
+}
+
+void Game::save_player(std::ofstream &file, Player &player) {
+    file << player.get_pos_x() << " " << player.get_pos_y() << '\n';
+    file << player.get_max_health() << " " << player.get_health() << '\n';
+    file << player.get_movement_speed() << " " << player.get_movement_left() << '\n';
+    file << player.get_items();
+    file << '\n';
+}
+
+void Game::save_enemies(std::ofstream &file, std::vector<Enemy> &enemies) {
+    file << std::to_string(enemies.size()) << '\n';
+    for (auto &enemy: enemies) {
+        file << enemy.get_pos_x() << " " << enemy.get_pos_y() << '\n';
+        file << enemy.get_image() << '\n';
+    }
+    file << '\n';
+}
+
+void Game::save_pickups(std::ofstream &file, std::vector<Pickup> &pickups) {
+    file << std::to_string(pickups.size()) << '\n';
+    for (auto &pickup: pickups) {
+        file << pickup.get_pos_x() << " " << pickup.get_pos_y() << '\n';
+        file << std::to_string(pickup.get_type()) << '\n';
+    }
+    file << '\n';
+}
+
 bool Game::save(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
     std::ofstream file;
     file.open("save.txt");
@@ -433,38 +471,11 @@ bool Game::save(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup>
         return false;
     }
 
-    // Game - Score
-    file << score << '\n';
-    file << '\n';
-
-    // Map
-    file << map.get_door_pos().first << " " << map.get_door_pos().second << '\n';
-    file << map.get_size() << '\n';
-    file << map.get_map();
-    file << '\n';
-
-    // Player
-    file << player.get_pos_x() << " " << player.get_pos_y() << '\n';
-    file << player.get_max_health() << " " << player.get_health() << '\n';
-    file << player.get_movement_speed() << " " << player.get_movement_left() << '\n';
-    file << player.get_items();
-    file << '\n';
-
-    // Enemies
-    file << std::to_string(enemies.size()) << '\n';
-    for (auto &enemy: enemies) {
-        file << enemy.get_pos_x() << " " << enemy.get_pos_y() << '\n';
-        file << enemy.get_image() << '\n';
-    }
-    file << '\n';
-
-    // Pickups
-    file << std::to_string(pickups.size()) << '\n';
-    for (auto &pickup: pickups) {
-        file << pickup.get_pos_x() << " " << pickup.get_pos_y() << '\n';
-        file << std::to_string(pickup.get_type()) << '\n';
-    }
-    file << '\n';
+    save_game_score(file);
+    save_map(file);
+    save_player(file, player);
+    save_enemies(file, enemies);
+    save_pickups(file, pickups);
 
     file.close();
     return true;
@@ -486,6 +497,118 @@ std::pair<int, int> Game::get_pair_from_str(const std::string &line) {
     return {first, second};
 }
 
+void Game::load_score(std::ifstream &file) {
+    std::string line;
+
+    std::getline(file, line);
+    score = std::stoi(line);
+}
+
+void Game::load_map(std::ifstream &file) {
+    std::string line;
+
+    std::getline(file, line);
+    map.set_door_pos(get_pair_from_str(line));
+
+    // Map
+    std::getline(file, line);
+    int j = std::stoi(line);
+    std::string new_map;
+    for (int k = 0; k < j; ++k) {
+        std::getline(file, line);
+        new_map += line;
+        new_map += '\n';
+    }
+    map.set_map(j, new_map);
+}
+
+void Game::load_player(std::ifstream &file, Player &player) {
+    std::string line;
+    int first, second, third;
+
+    // Pos
+    std::getline(file, line);
+    player.set_pos(get_pair_from_str(line).first, get_pair_from_str(line).second);
+    // Health
+    std::getline(file, line);
+    first = get_pair_from_str(line).first;
+    second = get_pair_from_str(line).second;
+    player.set_max_health(first);
+    player.set_health(second);
+    // Speed
+    std::getline(file, line);
+    first = get_pair_from_str(line).first;
+    second = get_pair_from_str(line).second;
+    player.set_movement_speed(first);
+    player.set_movement_left(second);
+    // Items
+    std::getline(file, line);
+    first = get_pair_from_str(line).second;
+    std::getline(file, line);
+    second = get_pair_from_str(line).second;
+    std::getline(file, line);
+    third = get_pair_from_str(line).second;
+    player.set_items(first, second, third);
+}
+
+void Game::load_enemies(std::ifstream &file, std::vector<Enemy> &enemies) {
+    std::string line;
+    int first, second;
+
+    std::getline(file, line);
+    int j = std::stoi(line);
+    for (int k = 0; k < j; ++k) {
+        std::getline(file, line);
+        first = get_pair_from_str(line).first;
+        second = get_pair_from_str(line).second;
+        std::getline(file, line);
+        char c = line.c_str()[0];
+        switch (c) {
+            case 'W':
+                enemies.emplace_back(map, WARRIOR, first, second);
+                break;
+            case 'M':
+                enemies.emplace_back(map, MAGE, first, second);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void Game::load_pickups(std::ifstream &file, std::vector<Pickup> &pickups) {
+    std::string line;
+    int first, second, third;
+
+    std::getline(file, line);
+    int j = std::stoi(line);
+    for (int k = 0; k < j; ++k) {
+        std::getline(file, line);
+        first = get_pair_from_str(line).first;
+        second = get_pair_from_str(line).second;
+        std::getline(file, line);
+        third = std::stoi(line);
+        switch (third) {
+            case 0:
+                pickups.emplace_back(map, RANDOM_PICKUP, first, second);
+                break;
+            case 1:
+                pickups.emplace_back(map, HEALTH_POTION, first, second);
+                break;
+            case 2:
+                pickups.emplace_back(map, POWER_POTION, first, second);
+                break;
+            case 3:
+                pickups.emplace_back(map, SPEED_POTION, first, second);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+}
+
 bool Game::load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
     std::ifstream file("save.txt");
 
@@ -493,122 +616,38 @@ bool Game::load(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup>
         return false;
     }
 
-    int i = 0, j, first, second, third;
-    std::string line, tmp;
+    int i = 0;
+    std::string line;
 
     while (true) {
-        // Game - Score
         if (i == 0) {
-            std::getline(file, line);
-            score = std::stoi(line);
+            load_score(file);
 
             std::getline(file, line);
             i++;
         }
 
-        // Map
         else if (i == 1) {
-            // Door Pos
-            std::getline(file, line);
-            map.set_door_pos(get_pair_from_str(line));
-
-            // Map
-            std::getline(file, line);
-            j = std::stoi(line);
-            std::string new_map;
-            for (int k = 0; k < j; ++k) {
-                std::getline(file, line);
-                new_map += line;
-                new_map += '\n';
-            }
-            map.set_map(j, new_map);
+            load_map(file);
 
             std::getline(file, line);
             i++;
         }
 
-        // Player
         else if (i == 2) {
-            // Pos
-            std::getline(file, line);
-            player.set_pos(get_pair_from_str(line).first, get_pair_from_str(line).second);
-            // Health
-            std::getline(file, line);
-            first = get_pair_from_str(line).first;
-            second = get_pair_from_str(line).second;
-            player.set_max_health(first);
-            player.set_health(second);
-            // Speed
-            std::getline(file, line);
-            first = get_pair_from_str(line).first;
-            second = get_pair_from_str(line).second;
-            player.set_movement_speed(first);
-            player.set_movement_left(second);
-            // Items
-            std::getline(file, line);
-            first = get_pair_from_str(line).second;
-            std::getline(file, line);
-            second = get_pair_from_str(line).second;
-            std::getline(file, line);
-            third = get_pair_from_str(line).second;
-            player.set_items(first, second, third);
+            load_player(file, player);
 
             std::getline(file, line);
             i++;
 
-            // Enemies
         } else if (i == 3) {
-            std::getline(file, line);
-            j = std::stoi(line);
-            for (int k = 0; k < j; ++k) {
-                std::getline(file, line);
-                first = get_pair_from_str(line).first;
-                second = get_pair_from_str(line).second;
-                std::getline(file, line);
-                char c = line.c_str()[0];
-                switch (c) {
-                    case 'W':
-                        enemies.emplace_back(map, WARRIOR, first, second);
-                        break;
-                    case 'M':
-                        enemies.emplace_back(map, MAGE, first, second);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            load_enemies(file, enemies);
 
             std::getline(file, line);
             i++;
 
-        // Pickups
         } else if (i == 4) {
-            std::getline(file, line);
-            j = std::stoi(line);
-            for (int k = 0; k < j; ++k) {
-                std::getline(file, line);
-                first = get_pair_from_str(line).first;
-                second = get_pair_from_str(line).second;
-                std::getline(file, line);
-                third = std::stoi(line);
-                switch (third) {
-                    case 0:
-                        pickups.emplace_back(map, RANDOM_PICKUP, first, second);
-                        break;
-                    case 1:
-                        pickups.emplace_back(map, HEALTH_POTION, first, second);
-                        break;
-                    case 2:
-                        pickups.emplace_back(map, POWER_POTION, first, second);
-                        break;
-                    case 3:
-                        pickups.emplace_back(map, SPEED_POTION, first, second);
-                        break;
-                    default:
-                        break;
-                }
-
-            }
+            load_pickups(file, pickups);
 
             std::getline(file, line);
             i++;

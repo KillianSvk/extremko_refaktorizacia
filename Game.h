@@ -24,7 +24,16 @@ private:
     bool fight(Player &player, Enemy &enemy);
     void populate_enemies(std::vector<Enemy> &enemies, std::vector<std::pair<int, int>> &used_pos);
     void populate_pickups(std::vector<Pickup> &pickups, std::vector<std::pair<int, int>> &used_pos);
-
+    void save_game_score(std::ofstream &file) const;
+    void save_map(std::ofstream &file);
+    static void save_player(std::ofstream &file, Player &player);
+    static void save_enemies(std::ofstream &file, std::vector<Enemy> &enemies);
+    static void save_pickups(std::ofstream &file, std::vector<Pickup> &pickups);
+    void load_score(std::ifstream &file);
+    void load_map(std::ifstream &file);
+    void load_player(std::ifstream &file, Player &player);
+    void load_enemies(std::ifstream &file, std::vector<Enemy> &enemies);
+    void load_pickups(std::ifstream &file, std::vector<Pickup> &pickups);
 
 public:
     Game();
