@@ -8,3 +8,5 @@ moved functions from public -> private
 Game::populate_map
 Game::save
 Game::load
+
+Player::move

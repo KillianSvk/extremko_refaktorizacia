@@ -20,51 +20,17 @@ bool Player::move(direction direction) {
     if (movement_left <= 0) {
         return false;
     }
+    // left, right, down, up
+    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    directions[direction];
 
-    switch (direction) {
-        case LEFT:
-            if (map.is_walkable(pos_x - 1, pos_y)) {
-                set_pos(pos_x - 1, pos_y);
-                movement_left--;
-                return true;
-            }
-
-            std::cout << "Can't go there, try another way" << '\n';
-            return false;
-
-        case RIGHT:
-            if (map.is_walkable(pos_x + 1, pos_y)) {
-                set_pos(pos_x + 1, pos_y);
-                movement_left--;
-                return true;
-            }
-
-            std::cout << "Can't go there, try another way" << '\n';
-            return false;
-
-        case UP:
-            if (map.is_walkable(pos_x, pos_y - 1)) {
-                set_pos(pos_x, pos_y - 1);
-                movement_left--;
-                return true;
-            }
-
-            std::cout << "Can't go there, try another way" << '\n';
-            return false;
-
-        case DOWN:
-            if (map.is_walkable(pos_x, pos_y + 1)) {
-                set_pos(pos_x, pos_y + 1);
-                movement_left--;
-                return true;
-            }
-
-            std::cout << "Can't go there, try another way" << '\n';
-            return false;
-
-        default:
-            return false;
+    if (map.is_walkable(pos_x + directions[direction].first, pos_y +directions[direction].second)) {
+        set_pos(pos_x + directions[direction].first, pos_y + directions[direction].second);
+        movement_left--;
+        return true;
     }
+    std::cout << "Can't go there, try another way" << '\n';
+    return false;
 }
 
 bool Player::pickup(Pickup &pickup) {
