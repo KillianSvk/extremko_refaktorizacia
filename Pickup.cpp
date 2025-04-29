@@ -1,73 +1,45 @@
+#include <memory>
 #include "Pickup.h"
 
-Pickup::Pickup(Map &map, pickup_type _type) : map(map), type(_type) {
-    generate_pickup(_type);
-    pos_x = std::numeric_limits<int>::min();
-    pos_y = std::numeric_limits<int>::min();
-}
-
-Pickup::Pickup(Map &map,int pos_x, int pos_y) : map(map), pos_x(pos_x), pos_y(pos_y) {
-    generate_pickup(RANDOM_PICKUP);
-    set_pos(pos_x, pos_y);
-}
-
-Pickup::Pickup(Map &map, pickup_type _type, int pos_x, int pos_y) : map(map), type(_type), pos_x(pos_x), pos_y(pos_y) {
-    set_pos(pos_x, pos_y);
-}
-
-void Pickup::generate_pickup(pickup_type _type) {
-    int chance;
-    if (_type == RANDOM_PICKUP) {
-        srand(time(nullptr));
-        chance = rand() % 3 + 1;
-
-    } else {
-        chance = _type;
+std::unique_ptr<PickupBase> Pickup::create_pickup(Map &map, pickup_type type) {
+    if (type == RANDOM_PICKUP) {
+        type = static_cast<pickup_type>(1 + rand() % 3);
     }
 
-    switch (chance) {
-        case 1:
-            type = HEALTH_POTION;
-            break;
-
-        case 2:
-            type = POWER_POTION;
-            break;
-
-        case 3:
-            type = SPEED_POTION;
-            break;
-
-        default:
-            throw std::runtime_error("Potion type doesn't exist");
-            break;
+    switch (type) {
+        case HEALTH_POTION: return std::make_unique<HealthPotion>(map);
+        case POWER_POTION: return std::make_unique<PowerPotion>(map);
+        case SPEED_POTION: return std::make_unique<SpeedPotion>(map);
+        default: throw std::runtime_error("Invalid pickup type");
     }
 }
 
-bool Pickup::set_pos(int x, int y) {
-    if (! map.is_walkable(x,y)) {
-        return false;
-    }
+Pickup::Pickup(Map &map, pickup_type type) : pickup_impl(create_pickup(map, type)) {}
 
-    pos_x = x;
-    pos_y = y;
-    map.set_pos(x, y, PICKUP);
-    return true;
+Pickup::Pickup(Map &map, pickup_type type, int pos_x, int pos_y) : pickup_impl(create_pickup(map, type)) {
+    pickup_impl->set_pos(pos_x, pos_y);
+}
+
+pickup_type Pickup::get_type() const {
+    return pickup_impl->get_type();
 }
 
 std::string Pickup::description() const {
-    if (type == HEALTH_POTION) {
-        return "HEALTH POTION (h): heals 15 HP";
+    return pickup_impl->description();
+}
 
-    }else if (type == POWER_POTION) {
-        return "POWER POTION (p): gives +2 attack for one fight";
+bool Pickup::set_pos(int x, int y) {
+    return pickup_impl->set_pos(x, y);
+}
 
-    }else if (type == SPEED_POTION) {
-        return "SPEED POTION (s): gives +1 max movement speed";
+std::pair<int, int> Pickup::get_pos() const {
+    return pickup_impl->get_pos();
+}
 
-    } else {
-        throw std::runtime_error("Potion type doesn't exist");
-    }
+void Pickup::pickup() {
+    pickup_impl->pickup();
+}
 
-
+bool Pickup::is_picked() const {
+    return pickup_impl->is_picked();
 }

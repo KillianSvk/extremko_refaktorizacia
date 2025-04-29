@@ -7,9 +7,11 @@
 #include "Pawn.cpp"
 #include "Enemy.cpp"
 #include "Player.cpp"
+#include "PickupBase.cpp"
+#include "HealthPotion.cpp"
+#include "PowerPotion.cpp"
+#include "SpeedPotion.cpp"
 #include "Pickup.cpp"
-
-
 
 int main() {
 

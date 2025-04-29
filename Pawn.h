@@ -1,9 +1,10 @@
+#pragma once
+
 #include <iostream>
 
 #include "Map.h"
 #include "Pickup.h"
 
-#pragma once
 
 class Pawn {
 protected:

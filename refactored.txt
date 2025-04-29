@@ -8,5 +8,8 @@ moved functions from public -> private
 Game::populate_map
 Game::save
 Game::load
+Game::player_use_item
 
 Player::move
+
+Each pickup type remade into a class for generalization

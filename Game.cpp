@@ -347,24 +347,18 @@ bool Game::player_use_item(Player &player) {
 
     if (player_input == "b" || player_input == "back") {
         return false;
+    }
 
-    } else if (player_input == "p") {
-        if (player.use_item(POWER_POTION)) {
-            std::cout << "You used POWER POTION \n";
-            player.use_movement();
-            return true;
-        }
+    std::map<std::string, std::pair<pickup_type, std::string>> item_map = {
+        {"p", {POWER_POTION, "POWER POTION \n"}},
+        {"s", {SPEED_POTION, "SPEED POTION \n"}},
+        {"h", {HEALTH_POTION, "HEALTH POTION \n"}}
+    };
 
-    } else if (player_input == "s") {
-        if (player.use_item(SPEED_POTION)) {
-            std::cout << "You used SPEED POTION \n";
-            player.use_movement();
-            return true;
-        }
-
-    } else if (player_input == "h") {
-        if (player.use_item(HEALTH_POTION)) {
-            std::cout << "You used HEALTH POTION \n";
+    if (item_map.find(player_input) != item_map.end()) {
+        auto [type, message] = item_map[player_input];
+        if (player.use_item(type)) {
+            std::cout << "You used " << message;
             player.use_movement();
             return true;
         }
@@ -425,7 +419,7 @@ void Game::save_enemies(std::ofstream &file, std::vector<Enemy> &enemies) {
 void Game::save_pickups(std::ofstream &file, std::vector<Pickup> &pickups) {
     file << std::to_string(pickups.size()) << '\n';
     for (auto &pickup: pickups) {
-        file << pickup.get_pos_x() << " " << pickup.get_pos_y() << '\n';
+        file << pickup.get_pos().first << " " << pickup.get_pos().second << '\n';
         file << std::to_string(pickup.get_type()) << '\n';
     }
     file << '\n';
@@ -557,19 +551,13 @@ void Game::load_pickups(std::ifstream &file, std::vector<Pickup> &pickups) {
         std::getline(file, line);
         third = std::stoi(line);
         switch (third) {
-            case 0:
-                pickups.emplace_back(map, RANDOM_PICKUP, first, second);
-                break;
-            case 1:
-                pickups.emplace_back(map, HEALTH_POTION, first, second);
-                break;
-            case 2:
-                pickups.emplace_back(map, POWER_POTION, first, second);
-                break;
-            case 3:
-                pickups.emplace_back(map, SPEED_POTION, first, second);
+            case HEALTH_POTION:
+            case POWER_POTION:
+            case SPEED_POTION:
+                pickups.emplace_back(map, static_cast<pickup_type>(third), first, second);
                 break;
             default:
+                std::cerr << "Error: Invalid pickup type in save file: " << third << std::endl;
                 break;
         }
 

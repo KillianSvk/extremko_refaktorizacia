@@ -149,10 +149,10 @@ TEST(Game, PopulateMap) {
     ASSERT_TRUE(num_of_enemies < 4);
 
     int num_of_pickups = 0;
-    for (auto pickup : pickups) {
+    for (const auto& pickup : pickups) {
         ASSERT_FALSE(pickup.is_picked());
-        ASSERT_TRUE(map->is_walkable(pickup.get_pos_x(), pickup.get_pos_y()));
-        ASSERT_FALSE(map->is_empty(pickup.get_pos_x(), pickup.get_pos_y()));
+        ASSERT_TRUE(map->is_walkable(pickup.get_pos().first, pickup.get_pos().second));
+        ASSERT_FALSE(map->is_empty(pickup.get_pos().first, pickup.get_pos().second));
         num_of_pickups++;
     }
     ASSERT_TRUE(num_of_pickups >= 0);
@@ -193,8 +193,8 @@ TEST(Game, SaveLoad) {
 
     for (int i = 0; i < pickups.size(); ++i) {
         ASSERT_EQ(pickups[i].get_type(), pickups2[i].get_type());
-        ASSERT_EQ(pickups[i].get_pos_x(), pickups2[i].get_pos_x());
-        ASSERT_EQ(pickups[i].get_pos_y(), pickups2[i].get_pos_y());
+        ASSERT_EQ(pickups[i].get_pos().first, pickups2[i].get_pos().first);
+        ASSERT_EQ(pickups[i].get_pos().second, pickups2[i].get_pos().second);
     }
 
 }
@@ -410,4 +410,49 @@ TEST(Player, PotionPower) {
 }
 
 
-// save
+TEST(Pickup, Inicialization) {
+    Map map(false);
+    Pickup pickup(map, HEALTH_POTION, 1, 1);
+    ASSERT_EQ(HEALTH_POTION, pickup.get_type());
+    ASSERT_EQ(1, pickup.get_pos().first);
+    ASSERT_EQ(1, pickup.get_pos().second);
+    ASSERT_FALSE(pickup.is_picked());
+}
+
+TEST(Pickup, HealthPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, HEALTH_POTION);
+
+    player.pickup(pickup);
+
+
+    player.lose_health(5);
+    ASSERT_EQ(25, player.get_health());
+    player.use_item(HEALTH_POTION);
+    ASSERT_EQ(30, player.get_health());
+}
+
+TEST(Pickup, PowerPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, POWER_POTION);
+
+    player.pickup(pickup);
+
+    int old_damage = player.get_damage();
+    player.use_item(POWER_POTION);
+    ASSERT_EQ(old_damage + 2, player.get_damage());
+}
+
+TEST(Pickup, SpeedPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, SPEED_POTION);
+
+    player.pickup(pickup);
+
+    int old_speed = player.get_movement_speed();
+    player.use_item(SPEED_POTION);
+    ASSERT_EQ(old_speed + 1, player.get_movement_speed());
+}

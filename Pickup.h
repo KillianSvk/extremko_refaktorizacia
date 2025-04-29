@@ -1,38 +1,28 @@
-#include <random>
-#include <ctime>
-#include <stdexcept>
-#include <exception>
-
-#include "Map.h"
-
 #pragma once
 
-enum pickup_type {RANDOM_PICKUP, HEALTH_POTION, POWER_POTION, SPEED_POTION};
+#include "PickupBase.h"
+#include "HealthPotion.h"
+#include "PowerPotion.h"
+#include "SpeedPotion.h"
+
+#include <memory>
+#include <stdexcept>
 
 class Pickup {
 private:
-    Map &map;
-    pickup_type type;
-    int pos_x, pos_y;
-    char image = 15;
-    bool picked = false;
 
-    void generate_pickup(pickup_type _type);
+    static std::unique_ptr<PickupBase> create_pickup(Map &map, pickup_type type);
 
 public:
-    Pickup(Map &map, pickup_type _type);
-    Pickup(Map &map, int pos_x, int pos_y);
-    Pickup(Map &map, pickup_type _type, int pos_x, int pos_y);
+    Pickup(Map &map, pickup_type type);
+    Pickup(Map &map, pickup_type type, int pos_x, int pos_y);
 
-    [[nodiscard]] pickup_type get_type() const {return type;};
-    [[nodiscard]] std::string description() const;
+    pickup_type get_type() const;
+    std::string description() const;
     bool set_pos(int x, int y);
-    int get_pos_x() const{return pos_x;}
-    int get_pos_y() const{return pos_y;}
-    std::pair<int,int> get_pos() const {return std::pair<int, int>{pos_x, pos_y};}
-    void pickup() {picked = true;}
-    bool is_picked() const{return picked;}
+    std::pair<int, int> get_pos() const;
+    void pickup();
+    bool is_picked() const;
+
+    std::unique_ptr<PickupBase> pickup_impl;
 };
-
-
-
