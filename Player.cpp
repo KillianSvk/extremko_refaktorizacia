@@ -22,13 +22,13 @@ bool Player::move(direction direction) {
     }
     // left, right, down, up
     std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    directions[direction];
 
     if (map.is_walkable(pos_x + directions[direction].first, pos_y +directions[direction].second)) {
         set_pos(pos_x + directions[direction].first, pos_y + directions[direction].second);
         movement_left--;
         return true;
     }
+
     std::cout << "Can't go there, try another way" << '\n';
     return false;
 }
