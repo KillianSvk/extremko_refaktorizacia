@@ -215,8 +215,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
 
         for (auto &pickup: pickups) {
             if (!pickup.is_picked()
-                && pickup.get_pos_x() == player.get_pos_x()
-                && pickup.get_pos_y() == player.get_pos_y()) {
+                && pickup.get_pos() == player.get_pos()) {
 
                 player.pickup(pickup);
                 std::cout << "You found " << pickup.description() << ", on the ground \n";
@@ -225,8 +224,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
 
         for (auto &enemy: enemies) {
             if (!enemy.is_dead()
-                && enemy.get_pos_x() == player.get_pos_x()
-                && enemy.get_pos_y() == player.get_pos_y()) {
+                && enemy.get_pos() == player.get_pos()) {
                 std::cout << "You approached enemy in the Dungeon \n";
                 fight(player, enemy);
             }

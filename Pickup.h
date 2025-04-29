@@ -29,6 +29,7 @@ public:
     bool set_pos(int x, int y);
     int get_pos_x() const{return pos_x;}
     int get_pos_y() const{return pos_y;}
+    std::pair<int,int> get_pos() const {return std::pair<int, int>{pos_x, pos_y};}
     void pickup() {picked = true;}
     bool is_picked() const{return picked;}
 };

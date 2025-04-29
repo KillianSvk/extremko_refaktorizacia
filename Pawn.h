@@ -20,6 +20,7 @@ public:
 
     int get_pos_x() const {return pos_x;}
     int get_pos_y() const {return pos_y;}
+    std::pair<int,int> get_pos() const {return std::pair<int, int>{pos_x, pos_y};}
     bool set_pos(int x, int y);
     int get_max_health() const {return max_health;}
     void set_max_health(int _max_health)  {max_health = _max_health;}
