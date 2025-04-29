@@ -347,24 +347,18 @@ bool Game::player_use_item(Player &player) {
 
     if (player_input == "b" || player_input == "back") {
         return false;
+    }
 
-    } else if (player_input == "p") {
-        if (player.use_item(POWER_POTION)) {
-            std::cout << "You used POWER POTION \n";
-            player.use_movement();
-            return true;
-        }
+    std::map<std::string, std::pair<pickup_type, std::string>> item_map = {
+        {"p", {POWER_POTION, "POWER POTION \n"}},
+        {"s", {SPEED_POTION, "SPEED POTION \n"}},
+        {"h", {HEALTH_POTION, "HEALTH POTION \n"}}
+    };
 
-    } else if (player_input == "s") {
-        if (player.use_item(SPEED_POTION)) {
-            std::cout << "You used SPEED POTION \n";
-            player.use_movement();
-            return true;
-        }
-
-    } else if (player_input == "h") {
-        if (player.use_item(HEALTH_POTION)) {
-            std::cout << "You used HEALTH POTION \n";
+    if (item_map.find(player_input) != item_map.end()) {
+        auto [type, message] = item_map[player_input];
+        if (player.use_item(type)) {
+            std::cout << "You used " << message;
             player.use_movement();
             return true;
         }
