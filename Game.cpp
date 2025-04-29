@@ -29,14 +29,14 @@ void Game::play() {
     std::vector<Pickup> pickups;
     srand(time(nullptr));
 
-    help();
+    print_help();
 
     while (true) {
         if (enemies.empty()) {
             populate_map(enemies, pickups);
         }
 
-        // Player Movement
+        // Player Turn
         if (player_turn(player, enemies, pickups)) {
             break;
         }
@@ -44,7 +44,7 @@ void Game::play() {
         std::cout << "HP: " << player.get_health() << " Moves: " << player.get_movement_left() << " ";
         print();
 
-        // Enemy Movement
+        // Enemy Turn
         for (auto &enemy: enemies) {
 
             if (enemy.is_dead()) {
@@ -76,7 +76,7 @@ void Game::play() {
 
 }
 
-void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
+void Game::populate_enemies(std::vector<Enemy> &enemies) {
     int range_of_num_of_enemies = 3;
     int min_num_of_enemies = 1;
     int num_of_enemies = rand() % range_of_num_of_enemies + min_num_of_enemies;
@@ -85,31 +85,37 @@ void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickup
         enemies.emplace_back(map);
     }
 
-    bool placed, original_pos;
+    bool placed, pos_free;
     int x, y;
     std::vector<std::pair<int, int>> used_pos;
 
     for (auto &enemy: enemies) {
         placed = false;
         while (!placed) {
-            original_pos = true;
+            pos_free = true;
             x = rand() % map.get_size();
             y = rand() % map.get_size();
             for (auto pos: used_pos) {
                 if (x == pos.first && y == pos.second) {
                     used_pos.emplace_back(x, y);
-                    original_pos = false;
+                    pos_free = false;
                     break;
                 }
             }
 
-            if (!original_pos) {
+            if (!pos_free) {
                 continue;
             }
 
             placed = enemy.set_pos(x, y);
         }
     }
+}
+
+void Game::populate_pickups(std::vector<Pickup> &pickups) {
+    bool placed, pos_free;
+    int x, y;
+    std::vector<std::pair<int, int>> used_pos;
 
     int range_of_num_of_pickups = 3;
     int num_of_pickups = rand() % range_of_num_of_pickups;
@@ -121,24 +127,29 @@ void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickup
     for (auto &pickup: pickups) {
         placed = false;
         while (!placed) {
-            original_pos = true;
+            pos_free = true;
             x = rand() % map.get_size();
             y = rand() % map.get_size();
             for (auto pos: used_pos) {
                 if (x == pos.first && y == pos.second) {
                     used_pos.emplace_back(x, y);
-                    original_pos = false;
+                    pos_free = false;
                     break;
                 }
             }
 
-            if (!original_pos) {
+            if (!pos_free) {
                 continue;
             }
 
-            placed = pickup.set_pos(rand() % map.get_size(), rand() % map.get_size());
+            placed = pickup.set_pos(x, y);
         }
     }
+}
+
+void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
+    populate_enemies(enemies);
+    populate_pickups(pickups);
 }
 
 bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
@@ -174,7 +185,7 @@ bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<
             }
 
         } else if (player_input == "help") {
-            help();
+            print_help();
 
         } else if (player_input == "save") {
             if (save(player, enemies, pickups)) {
@@ -396,7 +407,7 @@ bool Game::player_use_item(Player &player) {
     return false;
 }
 
-void Game::help() const {
+void Game::print_help() const {
     std::cout << "Controls: " << '\n'
               << "    UP - w" << '\n'
               << "    DOWN - s" << '\n'

@@ -1,9 +1,8 @@
-
 #include "Pickup.h"
 
 Pickup::Pickup(Map &map, pickup_type _type) : map(map), type(_type) {
     generate_pickup(_type);
-    pos_x = std::numeric_limits<int>::min(); pos_y = std::numeric_limits<int>::min();
+    pos_x=NULL; pos_y=NULL;
 }
 
 Pickup::Pickup(Map &map,int pos_x, int pos_y) : map(map), pos_x(pos_x), pos_y(pos_y) {

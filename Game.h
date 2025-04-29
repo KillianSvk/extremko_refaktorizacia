@@ -22,6 +22,9 @@ private:
     bool player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickup);
     bool player_use_item(Player &player);
     bool fight(Player &player, Enemy &enemy);
+    void populate_enemies(std::vector<Enemy> &enemies);
+    void populate_pickups(std::vector<Pickup> &pickups);
+
 
 public:
     Game();
@@ -31,7 +34,7 @@ public:
     Map* get_map() {return &map;}
 
     void print() const;
-    void help() const;
+    void print_help() const;
     void help_fight() const;
     void gain_score();
     void gain_score(int s);

@@ -18,7 +18,7 @@ public:
 
     void print() const;
       - vyprintuje do konzoly stav hry a mapu
-    void help() const;
+    void print_help() const;
       - vyprintuje do konzoly ovladanie hry
     void help_fight() const;
       - vyprintuje do konzoly ovladanie suboja
