@@ -9,6 +9,7 @@ Game::populate_map
 Game::save
 Game::load
 Game::player_use_item
+Game::player_turn
 
 Player::move
 
