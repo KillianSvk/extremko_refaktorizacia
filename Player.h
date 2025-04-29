@@ -1,9 +1,9 @@
+#pragma once
+
 #include <map>
 
 #include "Pawn.h"
-#include "Pickup.h"
 
-#pragma once
 
 enum direction {LEFT, RIGHT, UP, DOWN};
 
@@ -22,15 +22,16 @@ public:
     int get_damage() const override {return current_damage;}
     void reset_movement(){movement_left = movement_speed;};
     void reset_damage(){current_damage = damage;};
+    void increase_damage(int _damage) {current_damage += _damage;};
     std::string get_items ();
     void set_items (int num_health, int num_speed, int num_power);
     void print_items() const;
 
     bool move(direction direction);
     void use_movement() {movement_left--;}
-    bool pickup(Pickup &pickup);
-    bool use_item(pickup_type type) override;
+    bool pickup(Pickup &pickup_item);
 
+    bool use_item(pickup_type type) override;
 };
 
 

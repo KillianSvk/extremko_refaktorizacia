@@ -10,3 +10,5 @@ Game::save
 Game::load
 
 Player::move
+
+Each pickup type remade into a class for generalization

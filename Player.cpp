@@ -38,27 +38,10 @@ bool Player::pickup(Pickup &pickup) {
         return false;
     }
 
-    switch (pickup.get_type()) {
-        case HEALTH_POTION:
-            inventory[HEALTH_POTION]++;
-            break;
-
-        case SPEED_POTION:
-            inventory[SPEED_POTION]++;
-            break;
-
-        case POWER_POTION:
-            inventory[POWER_POTION]++;
-            break;
-
-        default:
-            return false;
-    }
-
+    inventory[pickup.get_type()]++;
     pickup.pickup();
     return true;
 }
-
 std::string Player::get_items() {
     std::string string;
     for (auto item: inventory) {
@@ -81,26 +64,11 @@ void Player::print_items() const {
 }
 
 bool Player::use_item(pickup_type type) {
-    if (type == HEALTH_POTION && inventory[HEALTH_POTION] > 0) {
-        health += 15;
-        if (health > max_health) {
-            health = max_health;
-        }
-        inventory[HEALTH_POTION]--;
+    if (inventory[type] > 0) {
+        Pickup pickup(map, type);
+        pickup.pickup_impl->apply_effect(*this); // Call the effect on the player
+        inventory[type]--;
         return true;
     }
-
-    if (type == POWER_POTION && inventory[POWER_POTION] > 0) {
-        current_damage += 2;
-        inventory[POWER_POTION]--;
-        return true;
-    }
-
-    if (type == SPEED_POTION && inventory[SPEED_POTION] > 0) {
-        movement_speed++;
-        inventory[SPEED_POTION]--;
-        return true;
-    }
-
     return false;
 }

@@ -1,9 +1,13 @@
 #pragma once
+
 #include "Map.h"
+
 #include <string>
 #include <utility>
 
 enum pickup_type { RANDOM_PICKUP, HEALTH_POTION, POWER_POTION, SPEED_POTION };
+
+class Player;
 
 class PickupBase {
 protected:
@@ -18,6 +22,7 @@ public:
 
     virtual std::string description() const = 0;
     virtual pickup_type get_type() const = 0;
+    virtual void apply_effect(Player &player) = 0;
 
     bool set_pos(int x, int y);
     std::pair<int, int> get_pos() const;
