@@ -410,4 +410,49 @@ TEST(Player, PotionPower) {
 }
 
 
-// save
+TEST(Pickup, Inicialization) {
+    Map map(false);
+    Pickup pickup(map, HEALTH_POTION, 1, 1);
+    ASSERT_EQ(HEALTH_POTION, pickup.get_type());
+    ASSERT_EQ(1, pickup.get_pos().first);
+    ASSERT_EQ(1, pickup.get_pos().second);
+    ASSERT_FALSE(pickup.is_picked());
+}
+
+TEST(Pickup, HealthPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, HEALTH_POTION);
+
+    player.pickup(pickup);
+
+
+    player.lose_health(5);
+    ASSERT_EQ(25, player.get_health());
+    player.use_item(HEALTH_POTION);
+    ASSERT_EQ(30, player.get_health());
+}
+
+TEST(Pickup, PowerPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, POWER_POTION);
+
+    player.pickup(pickup);
+
+    int old_damage = player.get_damage();
+    player.use_item(POWER_POTION);
+    ASSERT_EQ(old_damage + 2, player.get_damage());
+}
+
+TEST(Pickup, SpeedPotion) {
+    Map map(false);
+    Player player(map, 1, 1);
+    Pickup pickup(map, SPEED_POTION);
+
+    player.pickup(pickup);
+
+    int old_speed = player.get_movement_speed();
+    player.use_item(SPEED_POTION);
+    ASSERT_EQ(old_speed + 1, player.get_movement_speed());
+}
