@@ -22,8 +22,8 @@ private:
     bool player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickup);
     bool player_use_item(Player &player);
     bool fight(Player &player, Enemy &enemy);
-    void populate_enemies(std::vector<Enemy> &enemies);
-    void populate_pickups(std::vector<Pickup> &pickups);
+    void populate_enemies(std::vector<Enemy> &enemies, std::vector<std::pair<int, int>> &used_pos);
+    void populate_pickups(std::vector<Pickup> &pickups, std::vector<std::pair<int, int>> &used_pos);
 
 
 public:

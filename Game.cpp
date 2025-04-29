@@ -1,4 +1,3 @@
-
 #include "Game.h"
 
 Game::Game() = default;
@@ -76,7 +75,7 @@ void Game::play() {
 
 }
 
-void Game::populate_enemies(std::vector<Enemy> &enemies) {
+void Game::populate_enemies(std::vector<Enemy> &enemies, std::vector<std::pair<int, int>> &used_pos) {
     int range_of_num_of_enemies = 3;
     int min_num_of_enemies = 1;
     int num_of_enemies = rand() % range_of_num_of_enemies + min_num_of_enemies;
@@ -87,7 +86,6 @@ void Game::populate_enemies(std::vector<Enemy> &enemies) {
 
     bool placed, pos_free;
     int x, y;
-    std::vector<std::pair<int, int>> used_pos;
 
     for (auto &enemy: enemies) {
         placed = false;
@@ -97,7 +95,6 @@ void Game::populate_enemies(std::vector<Enemy> &enemies) {
             y = rand() % map.get_size();
             for (auto pos: used_pos) {
                 if (x == pos.first && y == pos.second) {
-                    used_pos.emplace_back(x, y);
                     pos_free = false;
                     break;
                 }
@@ -108,17 +105,18 @@ void Game::populate_enemies(std::vector<Enemy> &enemies) {
             }
 
             placed = enemy.set_pos(x, y);
+            used_pos.emplace_back(x, y);
         }
     }
 }
 
-void Game::populate_pickups(std::vector<Pickup> &pickups) {
+void Game::populate_pickups(std::vector<Pickup> &pickups, std::vector<std::pair<int, int>> &used_pos) {
     bool placed, pos_free;
     int x, y;
-    std::vector<std::pair<int, int>> used_pos;
 
     int range_of_num_of_pickups = 3;
-    int num_of_pickups = rand() % range_of_num_of_pickups;
+    int min_num_of_pickups = 1;
+    int num_of_pickups = rand() % range_of_num_of_pickups + min_num_of_pickups;
 
     for (int i = 0; i < num_of_pickups; ++i) {
         pickups.emplace_back(map, RANDOM_PICKUP);
@@ -148,8 +146,9 @@ void Game::populate_pickups(std::vector<Pickup> &pickups) {
 }
 
 void Game::populate_map(std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {
-    populate_enemies(enemies);
-    populate_pickups(pickups);
+    std::vector<std::pair<int, int>> used_pos = {map.get_door_pos()};
+    populate_enemies(enemies, used_pos);
+    populate_pickups(pickups, used_pos);
 }
 
 bool Game::player_turn(Player &player, std::vector<Enemy> &enemies, std::vector<Pickup> &pickups) {

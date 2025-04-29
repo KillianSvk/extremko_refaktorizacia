@@ -138,7 +138,6 @@ TEST(Game, PopulateMap) {
     ASSERT_TRUE(pickups.empty());
 
     game.populate_map(enemies, pickups);
-
     int num_of_enemies = 0;
     for (auto enemy : enemies) {
         ASSERT_FALSE(enemy.is_dead());

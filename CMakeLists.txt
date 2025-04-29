@@ -14,7 +14,6 @@ set(SOURCE_FILES
         Player.cpp
         Pickup.cpp
 
-        main.cpp
         test_game.cpp
 
         GoogleTest/gtest-death-test.cc
