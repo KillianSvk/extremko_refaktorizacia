@@ -425,7 +425,7 @@ void Game::save_enemies(std::ofstream &file, std::vector<Enemy> &enemies) {
 void Game::save_pickups(std::ofstream &file, std::vector<Pickup> &pickups) {
     file << std::to_string(pickups.size()) << '\n';
     for (auto &pickup: pickups) {
-        file << pickup.get_pos_x() << " " << pickup.get_pos_y() << '\n';
+        file << pickup.get_pos().first << " " << pickup.get_pos().second << '\n';
         file << std::to_string(pickup.get_type()) << '\n';
     }
     file << '\n';
@@ -557,19 +557,13 @@ void Game::load_pickups(std::ifstream &file, std::vector<Pickup> &pickups) {
         std::getline(file, line);
         third = std::stoi(line);
         switch (third) {
-            case 0:
-                pickups.emplace_back(map, RANDOM_PICKUP, first, second);
-                break;
-            case 1:
-                pickups.emplace_back(map, HEALTH_POTION, first, second);
-                break;
-            case 2:
-                pickups.emplace_back(map, POWER_POTION, first, second);
-                break;
-            case 3:
-                pickups.emplace_back(map, SPEED_POTION, first, second);
+            case HEALTH_POTION:
+            case POWER_POTION:
+            case SPEED_POTION:
+                pickups.emplace_back(map, static_cast<pickup_type>(third), first, second);
                 break;
             default:
+                std::cerr << "Error: Invalid pickup type in save file: " << third << std::endl;
                 break;
         }
 

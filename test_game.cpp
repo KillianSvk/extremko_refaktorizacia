@@ -149,10 +149,10 @@ TEST(Game, PopulateMap) {
     ASSERT_TRUE(num_of_enemies < 4);
 
     int num_of_pickups = 0;
-    for (auto pickup : pickups) {
+    for (const auto& pickup : pickups) {
         ASSERT_FALSE(pickup.is_picked());
-        ASSERT_TRUE(map->is_walkable(pickup.get_pos_x(), pickup.get_pos_y()));
-        ASSERT_FALSE(map->is_empty(pickup.get_pos_x(), pickup.get_pos_y()));
+        ASSERT_TRUE(map->is_walkable(pickup.get_pos().first, pickup.get_pos().second));
+        ASSERT_FALSE(map->is_empty(pickup.get_pos().first, pickup.get_pos().second));
         num_of_pickups++;
     }
     ASSERT_TRUE(num_of_pickups >= 0);
@@ -193,8 +193,8 @@ TEST(Game, SaveLoad) {
 
     for (int i = 0; i < pickups.size(); ++i) {
         ASSERT_EQ(pickups[i].get_type(), pickups2[i].get_type());
-        ASSERT_EQ(pickups[i].get_pos_x(), pickups2[i].get_pos_x());
-        ASSERT_EQ(pickups[i].get_pos_y(), pickups2[i].get_pos_y());
+        ASSERT_EQ(pickups[i].get_pos().first, pickups2[i].get_pos().first);
+        ASSERT_EQ(pickups[i].get_pos().second, pickups2[i].get_pos().second);
     }
 
 }

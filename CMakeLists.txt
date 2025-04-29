@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6.2)
 project(extremko_refaktorizacia)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(Threads)
 
@@ -13,6 +13,10 @@ set(SOURCE_FILES
         Enemy.cpp
         Player.cpp
         Pickup.cpp
+        SpeedPotion.cpp
+        HealthPotion.cpp
+        PickupBase.cpp
+        PowerPotion.cpp
 
         test_game.cpp
 
